@@ -139,5 +139,42 @@ function createFreeSubdomain(){let sub=document.getElementById('dName').value.to
 renderAll();changeLang();autoRun();
 document.getElementById('top').addEventListener('wheel',(e)=>{if(Math.abs(e.deltaX)<Math.abs(e.deltaY)){e.currentTarget.scrollLeft+=e.deltaY;e.preventDefault();}},{passive:false});
 </script>
+  <!-- PWA Install Popup -->
+<div id="pwaPopup" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(20,20,30,.9);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);padding:14px 18px;border-radius:16px;z-index:100;display:flex;gap:12px;align-items:center;transition:.4s;opacity:0;">
+<span>📲 Seeti App Install karo?</span>
+<button class="glass-btn" onclick="installPWA()" style="background:linear-gradient(135deg,#8b5cf6,#06ffa5);color:#000;font-weight:800">Install</button>
+<button class="glass-btn" onclick="hidePWA()">X</button>
+</div>
+
+<script>
+// PWA Install Prompt Logic
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // 3 sec baad popup dikhao
+  setTimeout(()=>showPWA(), 3000);
+});
+
+function showPWA(){
+  let pop=document.getElementById('pwaPopup');
+  pop.style.transform='translateX(-50%) translateY(0)';
+  pop.style.opacity='1';
+}
+function hidePWA(){
+  let pop=document.getElementById('pwaPopup');
+  pop.style.transform='translateX(-50%) translateY(100px)';
+  pop.style.opacity='0';
+}
+async function installPWA(){
+  if(!deferredPrompt){ alert('Browser install support nahi kar raha ya already installed hai. Chrome me 3 dot > Add to Home Screen karo'); return; }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log('Install:', outcome);
+  deferredPrompt = null;
+  hidePWA();
+}
+window.addEventListener('appinstalled', ()=>{ console.log('Seeti Installed'); hidePWA(); });
+</script>
 </body>
   </html>
